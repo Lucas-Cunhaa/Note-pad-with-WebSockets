@@ -13,10 +13,11 @@ roomContentTextarea.addEventListener("keyup", async (e) => {
         method: "POST", 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ noteName: roomName, noteContent: value })
-    }).then((data) => console.log(data))
+    })
     }
 )
 
 window.addEventListener("load", async () => {
-    const data = await fetch(`http://localhost:3024/api/get-notepad/${roomName}`)
+    const data = await fetch(`http://localhost:3024/api/get-notepad/${roomName}`).then(res => res.json());
+    roomContentTextarea.value = data.content;
 })
