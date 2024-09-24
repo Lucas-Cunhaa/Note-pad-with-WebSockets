@@ -38,7 +38,7 @@ app.get("/api/get-notepad/:noteName", async (req, res) => {
     return res.sendStatus(404);
 });
 
-app.listen(3024, () => {
-    console.log("Server running on port 3024")
+app.listen(3060, () => {
+    console.log("Server running on port 3060")
 });
 
