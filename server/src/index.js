@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { getRedisInstance } from "./redis.ts";
+import pusher from "./pusher.js";
+import { getRedisInstance } from "./redis.js";
 
 const app = express();
 
@@ -22,9 +23,11 @@ app.post("/api/update-notepad", (req, res) => {
     
     const expiry = hourInMS;
 
+    pusher.trigger(noteName, "udated-note", noteObj);
     redisInstance.set(noteName, JSON.stringify(noteObj), "PX", expiry); 
     res.status(200).send(noteObj)
     console.log("bateu")
+
 
 })
 
@@ -38,7 +41,7 @@ app.get("/api/get-notepad/:noteName", async (req, res) => {
     return res.sendStatus(404);
 });
 
-app.listen(3060, () => {
-    console.log("Server running on port 3060")
+app.listen(3024, () => {
+    console.log("Server running on porta 3024")
 });
 
