@@ -1,10 +1,17 @@
 import Pusher from "pusher"; 
+import dotenv from "dotenv";
+
+dotenv.config();
+const appId = process.env.PUSHER_APP_ID;
+const key = process.env.PUSHER_KEY;
+const secret = process.env.PUSHER_SECRET;
+const cluster = process.env.PUSHER_CLUSTER;
 
 const pusher = new Pusher({
-  appId: "1941035",
-  key: "964d7c423e891c0a791e",
-  secret: "87a5614b590801f718da",
-  cluster: "mt1",
+  appId: appId,
+  key: key,
+  secret: secret,
+  cluster: cluster,
   useTLS: true
 });
 
