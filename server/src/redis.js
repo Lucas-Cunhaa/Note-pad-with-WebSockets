@@ -1,14 +1,22 @@
-import { Redis } from "ioredis"
-export function getRedisInstance() {
-    const instance = new Redis( {        
-        host: "redis-11291.c308.sa-east-1-1.ec2.redns.redis-cloud.com", 
-        port: 11291,
-        username: "default", 
-        password: "aXKqucJeu9jmjHjm4ZiTA6io1TycQFSb", 
-    })
+import { createClient } from 'redis';
+let instance;
 
-    instance.on("connect", () => console.log("Redis connected"))
-    instance.on("error", (error) => console.log("Redis error", error))
-    
-    return instance
-}
+const client = createClient({
+    username: 'default',
+    password: '2i00Vxh7LsMjqWTuc65REZSpY3kEAkeA',
+    socket: {
+        host: 'redis-11293.crce181.sa-east-1-2.ec2.redns.redis-cloud.com',
+        port: 11293
+    }
+});
+
+client.on('error', err => console.log('Redis Client Error', err));
+
+await client.connect();
+
+await client.set('foo', 'bar');
+const result = await client.get('foo');
+console.log(result)  // >>> bar
+
+export default client;
+

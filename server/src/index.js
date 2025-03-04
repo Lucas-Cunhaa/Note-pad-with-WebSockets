@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import pusher from "./pusher.js";
-import { getRedisInstance } from "./redis.js";
+import client from "./redis.js";
 
 const app = express();
 
@@ -11,31 +11,27 @@ app.use(cors());
 
 app.post("/api/update-notepad", (req, res) => {
 
-    const { noteName, noteContent } = req.body;
-
-    const redisInstance = getRedisInstance();
+    const { noteName, noteContent, userId } = req.body;
 
     const noteObj = {
-        content: noteContent
+        content: noteContent,
+        userId
     }; 
 
     const hourInMS = 6000 * 60 * 24;
     
     const expiry = hourInMS;
 
-    pusher.trigger(noteName, "udated-note", noteObj);
-    redisInstance.set(noteName, JSON.stringify(noteObj), "PX", expiry); 
+    pusher.trigger(noteName, "updated-note", noteObj);
+    client.set(noteName, JSON.stringify(noteObj), "PX", expiry); 
     res.status(200).send(noteObj)
-    console.log("bateu")
-
-
+    console.log(noteContent)
 })
 
 app.get("/api/get-notepad/:noteName", async (req, res) => {
     const { noteName } = req.params 
 
-    const redisInstance = getRedisInstance(); 
-    const note = await redisInstance.get(noteName);
+    const note = await client.get(noteName);
     if (note) return res.status(200).send(JSON.parse(note))
 
     return res.sendStatus(404);

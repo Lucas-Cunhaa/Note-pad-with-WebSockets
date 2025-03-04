@@ -3,6 +3,12 @@ const roomContentTextarea = document.getElementById("notepadContent")
 
 const params = new URLSearchParams(window.location.search)
 const roomName = params.get("name")
+
+const pusher = new Pusher('964d7c423e891c0a791e', {
+    cluster: 'mt1'
+  });
+
+  
 roomNameLabel.innerText = roomName
 
 roomContentTextarea.addEventListener("keyup", async (e) => {
@@ -12,29 +18,24 @@ roomContentTextarea.addEventListener("keyup", async (e) => {
     await fetch(`http://localhost:3024/api/update-notepad`, {
         method: "POST", 
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ noteName: roomName, noteContent: value })
+        body: JSON.stringify({ noteName: roomName, noteContent: value, userId: pusher.sessionID })
     })
     }
 )
 
 Pusher.logToConsole = true;
 
-const pusher = new Pusher('964d7c423e891c0a791e', {
-  cluster: 'mt1'
-});
 
 if (roomName) {
     const channel = pusher.subscribe(roomName);
     channel.bind("updated-note", data => {
         console.log({ data });
+        if (data.content && data.userId !== pusher.sessionID) roomContentTextarea.value = data.content;
 });
 }
 
 
 window.addEventListener("load", async () => {
     const data = await fetch(`http://localhost:3024/api/get-notepad/${roomName}`).then(res => res.json());
-    if(data.content) {
-        roomContentTextarea.value = data.content;
-    }
-    
+    roomContentTextarea.value = data.content;
 })
